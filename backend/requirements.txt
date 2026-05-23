@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pydantic
+PyMuPDF
+python-docx
+python-pptx
+pytesseract
+Pillow
+httpx
+python-multipart
+langchain-text-splitters
+langchain==0.2.16
+python-dotenv

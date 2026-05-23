@@ -1,0 +1,90 @@
+00:00:00 Speaker 1
+Your company needs a chatbot on their site where customers can ask questions. The chatbot needs to store, and retrieve all chat history, as well as company knowledge base, so that the agent can help your customer. And you might be wondering, how am I going to make this happen? Maybe your first instinct is to use OpenAI's SDK to write up a quick software, and create and simulate a chat. But you soon realize that there's a huge missing piece, which is context. You realize that you need to store these chat messages somewhere, and maintain conversation history. And most importantly, you need the agent to base their answer from company's internal knowledge base to answer questions accordingly.
+
+
+00:00:34 Speaker 1
+Also, you're not so sure that the company will later change from OpenAI to a different model, like Anthropic or Gemini. And now, all of a sudden, this all seems like a massive undertaking. Lang Chain is an abstraction layer that helps you build agents with minimal code. In other words, all the pain points that we identified earlier, Langchain gives you the tools to address them using their library. And you might be wondering at this point, what's the difference between an agent and an LLM? Understanding agent is a critical piece in knowing why Langchain is necessary tool for you to learn.
+
+
+00:01:05 Speaker 1
+When you use LLMs like OpenAI GPT, Anthropex Claude, or even Google's Gemini, you're using these models out of the box, meaning the model is rather like a static brain that answers questions based on what it learned during training. On the other hand, an agent has full autonomy with memory and tools to do whatever it thinks it needs to get the job done. So, in the earlier case, let's say the customer asked this question. What's your company's policy on refunding my product that arrived damaged? Now, traditionally, you might code something custom for this specific need. Now, with agents, things look a little bit different.
+
+
+00:01:36 Speaker 1
+An agent will have these capabilities for them to perform. First, ability to understand your intent using an LLM. Two, ability to store a company's knowledge base in a vector database. Three, ability to perform retrieval from vector database to find relevant data. Four, ability to search internal database to find what product the customer actually ordered. Five, ability to generate an answer based on the product they ordered according to the company's policy that we gathered. And lastly, ability to know the chat history with the memory. The biggest difference between traditional software and agentic software that you build using lang chain is this.
+
+
+00:02:10 Speaker 1
+In traditional software, these are typically programmed to run sequentially or conditionally based on code that determines how it's run. In the case of Langchain, these are rather developed in components and provided to an agent for it to decide how best to use its ability to deliver the task. Thankfully, Langchain comes with a large set of pre-built components. In our earlier example, to set up lane chain for your company's chatbot, Langchain allows you to use their existing tool that gives you direct access to LLM providers, like OpenAI and Enthropic. This means that setting up an API to OpenAI can easily be done using a single line of code,
+
+
+00:02:45 Speaker 1
+that says LLM equals chat openAI, instead of writing your own implementation of API connection, or even using the provider SDK tools, which keeps you locked in and difficult to switch in the future. So later, if the requirements change to use anthropic instead of OpenAI, you simply need to change the code to say LLM equals chatanthropic open bracket quote model equals cla 3 sonnet. A similar process just like this applies to all other abilities that we laid out earlier. Meaning, components that we identified in what typically goes into chatbots like memory, tools, MCP, vector databases, rag, all of these can be set up and configured using Langchain's pre-built libraries.
+
+
+00:03:23 Speaker 1
+Now, there's an extension of Langchain that helps you do more workflow automation called Langraph. And Langraph can interoperate with Langchain, which is covered in the next video just dedicated towards Langraph for you to check out. So similar to earlier, when we had to write code to manage API calls to LLM without lang chain, you would have to write your own logic to convert your company's document into semantic meaning through text embedding, store these embedding into a vector database like pine cone, or chroma using their SDK, implement your own semantic search, and then inject these results into prompt at runtime,
+
+
+00:03:54 Speaker 1
+and on top of that, managing state, managing memory, managing tool writing logic, as you can see the scope of writing and Maintaining these can get out of hand. Really fast. Thankfully, for LangChain, inside LangChain's library, you can import modules like Chroma for components related to vector database, OpenAI embedding for components related to text embedding, conversation buffer memory for components related to keeping memory in chat. And there are so many more components like this that help alleviate development efforts that go into building agentic software, like company chatbots that assist customer with return policy.
+
+
+00:04:26 Speaker 1
+With agents becoming the new way of building software, learning how to develop agentic software is becoming a critical skill set to have and libraries like Langchain can help your team drastically reduce development time, and accelerate your path to market by using pre-built modules instead of reinventing the wheel on tasks related to building agentic software. Now that we covered the conceptual elements of Langchain, let's look at how it looks like on a practical level. We can look over at this lab specifically geared towards how to use lang. All right, let's start with the labs.
+
+
+00:04:56 Speaker 1
+In this lab, we'll build our way up from installing Langchain to deploying a fully functional chatbot that combines memory, knowledge retrieval, and multiple AI models. Use the link in the description below to access the lab environment to follow along with me. The first question presents us with this scenario. Our company needs a chatbot, but we're realizing that it's more complex than just calling an API. We need to install the complete langchain ecosystem. We start by creating a workspace called Langchain-lab, and setting up a Python virtual environment to keep everything isolated and clean.
+
+
+00:05:28 Speaker 1
+After upgrading our package tools, we installed a core langchain libraries that form the backbone for building AI powered apps along with LLM provider integrations like OpenAI, Enthropic, and Google, so we can plug in different models easily. For storage and retrieval, we'll use FISS, or Fias, which is the vector database used for semantic search and embeddings. We'll also install Python-Env to manage environment variables securely. And finally, Graddio to quickly build interactive demos and user interfaces.
+
+
+00:05:58 Speaker 1
+Next, we dive into prompt templates, which are really the foundation of Langchain. This shows how prompt techniques work. You start with templates like, tell me about a certain topic, fill in variables like topic equals lang chain, and get the final prompt, tell me about lang chain, ready to send to the LLM. We have four example templates here. We start with basic templates that use variable substitution. Think of them like Python fst strings, but for AI prompts. This code shows how to use Langchain's prompt template. First, we create a template with placeholders for product and feature.
+
+
+00:06:29 Speaker 1
+Then, we fill it with values like lang chain and AI orchestration to generate a marketing slogan prompt. After that, we test it with different examples, smartphone, electric car, AI assistant. Each time replacing the placeholders to produce new prompts. Finally, it saves a small progress flag in the file called basic-templates.txt. Then we move to chat templates that structure entire conversations with system, human, and assistant messages. This is how we maintain context and flow in our chatbot conversations. The fshot learning section is particularly interesting.
+
+
+00:07:02 Speaker 1
+Here we're teaching the AI through examples. We show it patterns like happy to sad, and tall to short, and it learns to apply this to new inputs. The code demonstrates this beautifully with a template that learns from examples, and applies the patterns to new words. Take some time to explore the advanced templates sections yourself. It covers validation, and structured outputs that are essentially for production applications. Make sure to create the files, and execute them using the given commands before checking your work.
+
+
+00:07:32 Speaker 1
+Now, we connect to multiple LLMs through a unified interface. What's clever here is we're using a proxy server that gives us access to various models, like OpenAI compatible APIs. It's an API that looks and behaves like OpenAI's API, but it doesn't have to come directly from OpenAI. This is where proxy server comes in. It makes the other models, like Enthropic, Google, open source LLMs and etc behave as if it was from OpenAI. We start with a simple connection, then Explore how messages work in Langchain.
+
+
+00:08:02 Speaker 1
+Using system message, and human message objects to structure our conversations. The code shows us building conversation history that the AI can reference. The model configuration section demonstrates something crucial, which is temperature control. Set it to zero for precise consistent answers, or higher for creative responses. We create different models instances for different purposes. A fast model for simple tasks, a reasoning model for complex logic, a coding expert for programming questions. The code even shows us how to enable streaming for real-time responses.
+
+
+00:08:34 Speaker 1
+Create the script files, and execute them. Once done, check your work, and move on to the next question. Here's where it gets powerful. LCEL, the lang chain expression language. It's a new way of building and chaining components in Langchain. Instead of writing long complex code, LCAL lets you create simple composable pipelines using pipe operators. We chain components together elegantly. With streaming first, you don't have to wait for the whole answer. The response starts flowing in immediately. Async native means everything runs without blocking, giving you smoother and faster performance.
+
+
+00:09:07 Speaker 1
+With batch processing, you can handle multiple inputs at the same time, making things more efficient. And type safety ensures that all your inputs and outputs follow the right structure, so nothing breaks unexpectedly. The code literally shows prompt piping into model piping into parser. It's clean, readable, and makes complex workflows manageable. We build a chain that takes a question, formats it into a template, sends it to a model, and parses the output allin-one flowing pipeline. Here's what's happening with LCL in that snippet. We first define a model chat openai that connects to GPT through a proxy.
+
+
+00:09:42 Speaker 1
+Then we create a prompt template with a placeholder question, so that we can reuse it for different inputs. Next, we add a parser that converts the model's output into plain string. Finally, using LCL's pipe operator, we link these components together. Prompt to model to parser. There are other chains, such as parallel execution, dynamic routing, and advanced LCL, that I'll let you explore by yourself. Create and execute the script, and check your work, and proceed to the next question. In lane chain, memory is the system that keeps track of conversation history, the context.
+
+
+00:10:13 Speaker 1
+It stores past user inputs and AI responses so that the model can give you answers that feel natural, coherent, and contextual, just like a human would in an ongoing conversation. For memory systems, we implement in-memory chat message history wrapped with runnable with message history that maintains context across interfaces. The example demonstrates this perfectly. The AI remembers that the user introduced themselves as Alice, and loves Python, and can recall this information later in the conversation. This persistent context is what makes conversations feel natural.
+
+
+00:10:45 Speaker 1
+The rag implementation is where we connect our chatbot to actual knowledge. We load a document about lang chain. Itself, split it into chunks, create embeddings, and store them in a vector database. When user asks question, the system retrieves relevant information and generates informed responses. The code shows the complete pipeline from document loading to question answering. By the way, if you haven't learned Rag yet, check out the video we launched last week on our YouTube channel. Okay, finally, everything culminates in deploying our chatbot. The lab has prepared a complete application that combines all these elements.
+
+
+00:11:18 Speaker 1
+When we run it, it launches on port 7860 as a fully functional chatbot with memory, knowledge retrieval, and multimodel support. What makes this powerful isn't just the individual components. It's how lang chain provides a coherent framework for productionready AI application. Without it, you'd be writing custom implementation for custom memory, building semantic search from scratch, and managing complex model switching logic. The beauty of Langchain is vendor independence. If your company decides to switch from OpenAI to Enthropic, it's a oneline change instead of rewriting everything.
+
+
+00:11:50 Speaker 1
+As you work through the lab, experiment with different temperature settings and model configurations. You'll quickly develop an intuition for when to use precise versus creative models. For more in-depth courses and hands-on labs, check out our AI learning path on CodeCloud. Let us know what you'd like to learn from us in the comments below. And don't forget to subscribe to our channel, and to be notified when we release new content.
