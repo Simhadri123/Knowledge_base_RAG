@@ -11,3 +11,5 @@ python-multipart
 langchain-text-splitters
 langchain==0.2.16
 python-dotenv
+requests
+streamlit

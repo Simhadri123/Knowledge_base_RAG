@@ -5,7 +5,13 @@ from uuid import uuid4
 
 from fastapi import UploadFile
 
-from .config import CHUNKS_DIR, EXTRACTED_DIR, KNOWLEDGE_BASE_DIR, UPLOAD_DIR
+from .config import (
+    CHUNKS_DIR,
+    EXTRACTED_DIR,
+    KNOWLEDGE_ASSETS_DIR,
+    KNOWLEDGE_BASE_DIR,
+    UPLOAD_DIR,
+)
 
 
 def ensure_storage_dirs() -> None:
@@ -13,6 +19,7 @@ def ensure_storage_dirs() -> None:
     EXTRACTED_DIR.mkdir(parents=True, exist_ok=True)
     CHUNKS_DIR.mkdir(parents=True, exist_ok=True)
     KNOWLEDGE_BASE_DIR.mkdir(parents=True, exist_ok=True)
+    KNOWLEDGE_ASSETS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def save_upload_file(upload: UploadFile) -> Path:
@@ -49,4 +56,14 @@ def save_knowledge_json(filename: str, payload: Dict) -> Path:
     destination = KNOWLEDGE_BASE_DIR / safe_name
     with destination.open("w", encoding="utf-8") as handle:
         json.dump(payload, handle, ensure_ascii=False, indent=2)
+    return destination
+
+
+def save_knowledge_asset(filename: str, data: bytes) -> Path:
+    ensure_storage_dirs()
+    suffix = Path(filename).suffix.lower()
+    safe_name = f"{uuid4().hex}{suffix}"
+    destination = KNOWLEDGE_ASSETS_DIR / safe_name
+    with destination.open("wb") as handle:
+        handle.write(data)
     return destination
