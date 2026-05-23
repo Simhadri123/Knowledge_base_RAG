@@ -30,6 +30,17 @@ def _asset_base_url(api_base: str) -> str:
     return api_base.rstrip("/")
 
 
+def _list_knowledge_files() -> list[Path]:
+    knowledge_dir = Path(__file__).resolve().parents[1] / "backend" / "knowledge_base"
+    if not knowledge_dir.exists():
+        return []
+    return sorted(knowledge_dir.glob("*_knowledge.json"))
+
+
+def _load_knowledge_file(path: Path) -> Dict:
+    return __import__("json").loads(path.read_text(encoding="utf-8"))
+
+
 INSERT_MARKER = "[[INSERT_HERE]]"
 
 
@@ -42,21 +53,60 @@ def _render_header() -> None:
             font-family: 'Space Grotesk', sans-serif;
         }
         .app-shell {
-            background: radial-gradient(circle at 20% 20%, #f9f6ee 0%, #f3efe5 45%, #e8e4db 100%);
+            background: linear-gradient(135deg, #f97316 0%, #fb923c 60%, #fdba74 100%);
             padding: 1.5rem 2rem;
             border-radius: 16px;
-            border: 1px solid #e0dbcf;
+            border: 1px solid #f97316;
             margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        .app-shell h1, .app-shell p {
+            color: #ffffff;
         }
         .pill {
             display: inline-block;
             padding: 0.2rem 0.6rem;
             border-radius: 999px;
-            background: #222;
-            color: #fff;
+            background: #ffffff;
+            color: #9a3412;
             font-size: 0.75rem;
             letter-spacing: 0.06em;
             text-transform: uppercase;
+        }
+        section[data-testid="stSidebar"] .stButton > button {
+            width: 100%;
+            text-align: left;
+            border: 1px solid #fed7aa;
+            border-radius: 12px;
+            background: #fff7ed;
+            color: #7c2d12;
+            padding: 0.6rem 0.8rem;
+            height: 3.4rem;
+            min-height: 3.4rem;
+            max-height: 3.4rem;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+        }
+        section[data-testid="stSidebar"] .stButton > button:hover {
+            background: #ffedd5;
+            border-color: #fb923c;
+        }
+        section[data-testid="stSidebar"] .stButton > button > div {
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        section[data-testid="stSidebar"] .stButton {
+            margin: 0.4rem 0;
+        }
+        section[data-testid="stSidebar"] .block-container {
+            padding-top: 1.1rem;
+            padding-bottom: 1.1rem;
+            padding-left: 0.9rem;
+            padding-right: 0.9rem;
         }
         </style>
         <div class="app-shell">
@@ -73,8 +123,22 @@ def main() -> None:
     st.set_page_config(page_title="Knowledge Studio", layout="wide")
     _render_header()
 
-    api_base = st.sidebar.text_input("API Base URL", _default_api_base())
-    st.sidebar.caption("Example: http://127.0.0.1:8000/api/v1")
+    api_base = _default_api_base()
+
+    st.sidebar.header("History")
+    knowledge_files = _list_knowledge_files()
+    if knowledge_files:
+        for file_path in knowledge_files:
+            file_name = file_path.name
+            if st.sidebar.button(file_name, key=f"history_{file_name}", help=file_name):
+                payload = _load_knowledge_file(file_path)
+                st.session_state["kb_title"] = payload.get("title", "")
+                st.session_state["kb_content"] = payload.get("content", "")
+                st.session_state["kb_source"] = payload.get("source", file_name)
+                st.session_state["kb_saved_path"] = str(file_path)
+                st.session_state["history_loaded"] = file_name
+    else:
+        st.sidebar.caption("No saved knowledge files yet.")
 
     if "kb_title" not in st.session_state:
         st.session_state["kb_title"] = ""
