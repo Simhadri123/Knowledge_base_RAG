@@ -21,3 +21,4 @@ backend/extracted/
 backend/chunks/
 backend/knowledge_base/
 backend/tests/_samples/
+backend/app.db

@@ -100,6 +100,42 @@ API docs:
   - Response schema: KnowledgeAssetResponse
   - Errors: 400 validation, 500 asset upload failure
 
+- POST /chatbot/query
+  - Ask the local RAG chatbot a question
+  - Request schema: ChatbotQueryRequest
+  - Response schema: ChatbotQueryResponse
+  - Errors: 400 validation, 500 chatbot query failure
+
+- POST /auth/signup
+  - Create a user account
+
+- POST /auth/login
+  - Authenticate and return JWT access token
+
+- GET /auth/me
+  - Return the current user profile (JWT required)
+
+- POST /kb/create
+  - Create a KB owned by the current user
+
+- PUT /kb/{id}
+  - Update KB (owner only)
+
+- DELETE /kb/{id}
+  - Delete KB (owner only)
+
+- GET /kb/my-kbs
+  - List current user's KBs
+
+- GET /kb/{id}
+  - Get KB (owner or published)
+
+- POST /kb/{id}/publish
+  - Publish KB (owner only) and sync vector store
+
+- POST /kb/{id}/unpublish
+  - Unpublish KB (owner only) and sync vector store
+
 ### Example curl
 Health:
 ```bash
@@ -151,6 +187,13 @@ Knowledge asset upload:
 ```bash
 curl -X POST "http://127.0.0.1:8000/api/v1/knowledge/assets" \
   -F "file=@diagram.png"
+```
+
+Chatbot query:
+```bash
+curl -X POST "http://127.0.0.1:8000/api/v1/chatbot/query" \
+  -H "Content-Type: application/json" \
+  -d '{"query":"What is IAFB pruning?","top_k":5,"min_score":0.2}'
 ```
 
 ### Example frontend fetch

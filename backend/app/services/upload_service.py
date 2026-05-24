@@ -19,6 +19,8 @@ def handle_upload(file: UploadFile) -> Dict:
 
     stored_path = save_upload_file(file)
     text, metadata = extract_text(stored_path)
+    if not text.strip():
+        raise ValueError("Could not extract any text from the uploaded file. Please ensure the file contains text.")
 
     payload = {
         "filename": file.filename,

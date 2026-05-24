@@ -1,0 +1,4 @@
+{
+  "title": "Sample KB Article",
+  "content": "## Abstract\nThis is a sample abstract section for the local RAG pipeline.\n\n## Methodology\nThe methodology section describes how to build a local RAG pipeline using markdown sections.\n\n## Results\nResults highlight retrieval-friendly chunking and embedding workflows.\n\n## Conclusion\nLocal RAG enables secure, offline knowledge access."
+}

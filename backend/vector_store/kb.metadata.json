@@ -1,0 +1,261 @@
+[
+  {
+    "kb_id": "1",
+    "title": "Accelerating Computer Vision with Model Compression Techniques",
+    "section": "Introduction",
+    "content": "Deep learning\u2011based computer vision models achieve high accuracy but are often too large and computationally expensive for deployment on resource\u2011constrained devices. Model compression aims to reduce model size and inference cost while preserving predictive performance.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "1",
+    "title": "Accelerating Computer Vision with Model Compression Techniques",
+    "section": "Problem Statement",
+    "content": "- High\u2011capacity vision models exceed memory and latency budgets of edge hardware.\n- Training smaller architectures from scratch yields lower accuracy due to reduced representational capacity.\n- Compression must (a) meet resource constraints, (b) retain accuracy close to the original, and (c) generalize across datasets.\n- Different compression families make distinct assumptions: Knowledge Distillation (KD) leverages soft teacher outputs, pruning assumes redundant filters, and quantization assumes high\u2011precision representations are wasteful. The compression\u2011accuracy trade\u2011off is non\u2011monotonic, requiring empirical identification of operating points.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "1",
+    "title": "Accelerating Computer Vision with Model Compression Techniques",
+    "section": "Objectives",
+    "content": "1. Evaluate KD variants (standard offline, feature\u2011mapping, Contrastive KD (CKD), and trajectory matching) on ResNet\u201150\u2011supervised students.\n2. Compare L2\u2011norm pruning, Taylor\u2011criterion pruning, and the proposed Inference\u2011Aware Filter Importance (IAFB) method regarding compression ratio, accuracy retention, and calibration robustness.\n3. Assess 1\u2011bit weight/2\u2011bit activation (1W2A) quantization and mixed\u2011precision Quantization\u2011Aware Training (QAT) for accuracy loss and efficiency.\n4. Provide practical guidance on technique selection and demonstrate superiority of inference\u2011aware pruning.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "1",
+    "title": "Accelerating Computer Vision with Model Compression Techniques",
+    "section": "Methods",
+    "content": "- **Offline protocol**: Teacher (ResNet\u201150) frozen; student receives hard labels and soft teacher logits at temperature **T = 4.0**.\n- **Loss**: \\(L = \\alpha L_{CE}(y, \\sigma(z_s)) + (1-\\alpha) T^2 KL(\\sigma(z_t/T) \\| \\sigma(z_s/T))\\) with \\(\\alpha = 0.5\\).\n- **Feature\u2011Mapping KD**: Adds MSE between spatially pooled teacher features \\(f_t\\) and adapted student features \\(A(f_s)\\): \\(L_{FM}=L_{KD}+\\beta \\|f_t - A(f_s)\\|^2\\). A learned 1\u00d71 convolution aligns channel dimensions.\n- **Contrastive KD (CKD)**: Adds InfoNCE loss on student and teacher embeddings: \\(L_{CKD}=L_{KD}+\\gamma L_{InfoNCE}(r_t, r_s)\\).\n- **Adaptive Feature Consolidation (AFC / AFC++)**: Preserves important internal features with weighted L2 loss and consistency regularization \\(L_{cons}=\\|f(x)-f(x+\\delta)\\|^2\\).",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "1",
+    "title": "Accelerating Computer Vision with Model Compression Techniques",
+    "section": "Methods",
+    "content": "- Structured filter pruning (entire convolutional filters removed).\n- **L2\u2011norm pruning**: Importance = L2 norm of filter weights; data\u2011free.\n- **Taylor pruning**: Importance \\(\\Theta_i = |\\nabla_{a_i} L \\cdot a_i|\\) using gradients and activations from training mini\u2011batches.\n- **IAFB (proposed)**: Importance computed on a calibration set of 2000 images using median aggregation:\n\\(\\Phi_i = \\text{median}_{n\\in C} |\\nabla_{a_i^{(n)}} L \\cdot a_i^{(n)}|\\).\nMedian reduces sensitivity to outliers compared to mean.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "1",
+    "title": "Accelerating Computer Vision with Model Compression Techniques",
+    "section": "Methods",
+    "content": "- **1W2A**: Binarize weights to \\(\\pm1\\) (32\u00d7 storage reduction) and quantize activations to 2\u2011bit (4 levels). First and last layers remain full\u2011precision.\n- **Mixed\u2011precision QAT**: Per\u2011layer sensitivity analysis; layers causing >0.3% validation loss when individually quantized stay in FP32, others quantized to INT8. Includes a warm\u2011up phase of several full\u2011precision epochs before activating quantization.\n- **Modified Mixed Precision**: INT8 early layers, FP32 deeper layers; uses EMA updates for stability.\n- **ADQ + Mixed QAT**: Adds a weight\u2011alignment L2 loss between full\u2011precision and quantized weights to guide convergence.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "1",
+    "title": "Accelerating Computer Vision with Model Compression Techniques",
+    "section": "Experimental Setup",
+    "content": "- Framework: PyTorch, single 16GB GPU.\n- Teacher: ResNet\u201150 pretrained on ImageNet, fine\u2011tuned per dataset.\n- Students: MobileNetV2 and ResNet\u201118.\n- Datasets: CIFAR\u201110 (60k 32\u00d732 images, 10 classes), CIFAR\u2011100 (100 classes), ImageNette (10\u2011class ImageNet subset, 9469 train / 3925 val, higher resolution).\n- KD training: 100 epochs, SGD (momentum0.9), LR0.01, cosine annealing, temperature4.0.\n- Pruning: Iteratively remove bottom 10% of filters per criterion, fine\u2011tune 10 epochs per step, use 2000\u2011image calibration set for IAFB.\n- Quantization: 1W2A \u2013 80 epochs; Mixed\u2011precision \u2013 10\u2011epoch warm\u2011up + 70 QAT epochs.\n- Evaluation: Top\u20111 accuracy on held\u2011out test sets, averaged over three random seeds.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "1",
+    "title": "Accelerating Computer Vision with Model Compression Techniques",
+    "section": "Results",
+    "content": "| Student | Dataset | Standard KD \u0394Acc | Feature\u2011Map KD \u0394Acc | CKD \u0394Acc | Trajectory Matching \u0394Acc |\n|---|---|---|---|---|---|\n| ResNet\u201118 | CIFAR\u201110 | +1.3% (93.8% vs 92.5%) | +1.6% (94.1%) | \u2013 | \u2013 |\n| ResNet\u201118 | CIFAR\u2011100 | +0.6% (76.3% vs 74.7%) | \u2013 | **+0.27%** (best) | \u2013 |\n| ResNet\u201118 | ImageNette | +0.3% (93.2% vs 92.9%) | \u2013 | \u2013 | \u2013 |\n- CKD achieved the highest accuracy across all datasets and both student architectures, sometimes surpassing the teacher.\n- Feature\u2011Mapping KD provided marginal gains for similar architectures (ResNet\u201118) but degraded performance for heterogeneous pairs (ResNet\u201150 \u2192 MobileNetV2).\n- Trajectory matching helped ResNet\u201118 but offered limited benefit for MobileNetV2.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "1",
+    "title": "Accelerating Computer Vision with Model Compression Techniques",
+    "section": "Results",
+    "content": "| Model | Dataset | Method | Compression | \u0394Acc |\n|---|---|---|---|---|\n| DenseNet\u2011BC\u2011100 | CIFAR\u2011100 | L2\u2011norm | 51% | +1.49% |\n| DenseNet\u2011BC\u2011100 | CIFAR\u201110 | L2\u2011norm | 50% | +0.56% |\n| DenseNet\u2011BC\u2011100 | CIFAR\u2011100 | Taylor | 43% | \u20131.62% |\n| ResNet\u201150 | CIFAR\u201110 | IAFB | 70% | +2.14% |\n| ResNet\u201150 | CIFAR\u2011100 | IAFB | 70% | +2.75% |\n| MobileNetV2 | CIFAR\u2011100 | IAFB | 48% | +3.74% |\n| MobileNetV2 | CIFAR\u201110 | IAFB | 48% | +3.04% |\n| EfficientNet\u2011B0 | CIFAR\u201110 | IAFB | 34% | +7.76% |\n- IAFB consistently outperformed L2\u2011norm and Taylor pruning, delivering up to 70% compression while improving accuracy.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "1",
+    "title": "Accelerating Computer Vision with Model Compression Techniques",
+    "section": "Results",
+    "content": "| Model | Dataset | Method | \u0394Acc |\n|---|---|---|---|\n| ResNet\u201150 | CIFAR\u201110 | 1W2A | \u20133.49% |\n| ResNet\u201150 | CIFAR\u2011100 | 1W2A | \u20132.87% |\n| ResNet\u201150 | ImageNette | 1W2A | \u20134.08% |\n| ResNet\u201150\u2192ResNet\u201118 (KD) | CIFAR\u201110 | KD + 1W2A | \u20130.70% |\n| ResNet\u201150 | CIFAR\u201110 | Mixed\u2011precision QAT | \u20132.12% |\n| ResNet\u201118 | CIFAR\u201110 | Mixed\u2011precision QAT | \u20130.52% |\n| ResNet\u201118 | CIFAR\u201110 | Modified Mixed Precision | \u20130.04% |\n| ResNet\u201118 | CIFAR\u201110 | ADQ + Mixed QAT | \u20131.12% |\n| ResNet\u201118 | CIFAR\u2011100 | ADQ + Mixed QAT | +3.68% |\n- Mixed\u2011precision QAT retained accuracy within ~2% of full precision; the warm\u2011up phase was critical to avoid abrupt accuracy collapse.\n- Combining KD with 1W2A mitigated quantization loss substantially.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "1",
+    "title": "Accelerating Computer Vision with Model Compression Techniques",
+    "section": "Discussion",
+    "content": "- **CKD** excels because the InfoNCE loss preserves relational geometry of representations, acting as regularization and sometimes enabling students to outperform teachers.\n- **Feature\u2011Mapping KD** is sensitive to architectural mismatch; the adapter can introduce conflicting gradients, leading to instability.\n- **IAFB** gains stem from (1) using a dedicated calibration set rather than random training batches, and (2) median aggregation, which is robust to outlier gradient\u2011activation products.\n- All pruning methods exhibit a compression ceiling beyond which accuracy collapses regardless of importance criterion.\n- **Mixed\u2011precision QAT** is the most practical quantization approach; the sensitivity threshold for retaining FP32 layers must be tuned per architecture.\n- Stacking techniques (CKD \u2192 IAFB \u2192 mixed\u2011precision QAT) can accumulate compression benefits across accuracy, latency, and memory dimensions.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "1",
+    "title": "Accelerating Computer Vision with Model Compression Techniques",
+    "section": "Conclusion",
+    "content": "The systematic evaluation shows:\n- **Contrastive KD** is the most effective distillation variant.\n- **IAFB pruning** outperforms L2\u2011norm and Taylor criteria, achieving ~70% compression with accuracy gains.\n- **Mixed\u2011precision QAT** provides the best trade\u2011off between compression and accuracy, staying within two percentage points of full\u2011precision baselines.\nThese results guide practitioners: use structured pruning for latency\u2011critical deployments, quantization for memory\u2011constrained scenarios, and CKD for maximizing student accuracy. When multiple constraints coexist, the techniques can be sequentially applied to achieve compounded compression.  \n**Source code:** https://github.com/rahboddeda/Accelerating-Computer-Vision-using-Model-Compression-Techniques.git",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "2",
+    "title": "Building a Context\u2011Aware Company Chatbot with LangChain",
+    "section": "Problem Overview",
+    "content": "- A chatbot must answer customer questions, retain full chat history, and reference the company\u2019s internal knowledge base.\n- The solution must be model\u2011agnostic (e.g., OpenAI, Anthropic, Gemini) and avoid custom, hard\u2011to\u2011maintain code for storage, retrieval, and context handling.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "2",
+    "title": "Building a Context\u2011Aware Company Chatbot with LangChain",
+    "section": "LangChain Abstraction",
+    "content": "- Provides pre\u2011built **components** for:\n- LLM provider integration (single\u2011line `LLM = ChatOpenAI` or `ChatAnthropic(model=\"claude-3-sonnet\")`).\n- Memory (e.g., conversation buffer memory).\n- Vector databases (e.g., Chroma, Pinecone) for semantic search.\n- Embedding models (e.g., OpenAI embeddings).\n- Tools and retrieval mechanisms.\n- Switching providers requires only a line change, preserving vendor independence.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "2",
+    "title": "Building a Context\u2011Aware Company Chatbot with LangChain",
+    "section": "Langraph Extension",
+    "content": "- Langraph adds workflow automation and interoperates with LangChain for more complex pipelines.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "2",
+    "title": "Building a Context\u2011Aware Company Chatbot with LangChain",
+    "section": "Lab Walkthrough (Practical Implementation)",
+    "content": "1. **Environment Setup**\n- Create workspace `langchain-lab`.\n- Initialize a Python virtual environment.\n- Upgrade packaging tools.\n2. **Install Core Packages**\n- `langchain` core library.\n- Provider integrations: OpenAI, Anthropic, Google.\n- Vector DB: `FAISS` (used for semantic search and embeddings).\n- `python\u2011env` for secure environment variables.\n- `gradio` for interactive UI.\n3. **Prompt Templates**\n- Basic templates with variable substitution (e.g., `product`, `feature`).\n- Chat templates that structure system, human, and assistant messages to preserve context.\n- Advanced templates for validation and structured outputs.\n4. **LLM Connection via Proxy**\n- Use a proxy server that mimics OpenAI\u2019s API, allowing access to multiple models (OpenAI, Anthropic, Google, open\u2011source LLMs) with a unified interface.\n- Demonstrates message objects, temperature control, model specialization (fast, reasoning, coding), and streaming responses.\n5. **LangChain Expression Language (LCEL)**\n- Pipe operator (`|`) composes components: prompt \u2192 model \u2192 parser.\n- Supports streaming, async execution, batch processing, and type safety.\n- Example chain: `prompt_template | chat_openai | StrOutputParser`.\n6. **Memory Implementation**\n- In\u2011memory chat message history wrapped with a runnable that maintains context across interactions.\n- Example shows the AI recalling user\u2011provided details (e.g., name, preferences).\n7. **Retrieval\u2011Augmented Generation (RAG)**\n- Load a document, split into chunks, create embeddings, store in a vector DB.\n- On query, retrieve relevant chunks and generate informed answers.\n8. **Deployment**\n- Run the assembled application; it launches on port `7860` with full memory, knowledge retrieval, and multi\u2011model support.\n- Vendor switch (e.g., OpenAI \u2192 Anthropic) is a single\u2011line code change.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "2",
+    "title": "Building a Context\u2011Aware Company Chatbot with LangChain",
+    "section": "Key Benefits",
+    "content": "- **Reduced Development Time**: pre\u2011built modules replace custom implementations for memory, semantic search, and model switching.\n- **Vendor Independence**: change LLM providers with minimal code changes.\n- **Scalable Agentic Architecture**: components are modular, enabling flexible, autonomous agents.\n- **Production\u2011Ready Framework**: cohesive structure for building, testing, and deploying AI applications.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "2",
+    "title": "Building a Context\u2011Aware Company Chatbot with LangChain",
+    "section": "Next Steps",
+    "content": "- Experiment with temperature settings and model choices to balance precision vs. creativity.\n- Explore advanced LCEL features (parallel execution, dynamic routing).\n- Review additional resources such as the RAG video and the AI learning path on CodeCloud.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "3",
+    "title": "Accelerating Computer Vision using Model Compression Techniques \u2013 Structured Summary",
+    "section": "Abstract",
+    "content": "Deep Neural Networks dominate computer vision but their computational demands limit deployment on resource\u2011constrained mobile and embedded devices. Model compression is required to fit limited power, RAM, and storage while preserving performance.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "3",
+    "title": "Accelerating Computer Vision using Model Compression Techniques \u2013 Structured Summary",
+    "section": "Proposed Methodology",
+    "content": "- Keep text and graphic files separate until after formatting and styling.\n- Diagrams referenced: Fig1 (Influence\u2011Aware Filter\u2011Based Pruning \u2013 IAFB), Fig2 (Knowledge Distillation), Fig3 (Network Quantization).",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "3",
+    "title": "Accelerating Computer Vision using Model Compression Techniques \u2013 Structured Summary",
+    "section": "Techniques",
+    "content": "- Teacher\u2011student framework where a large pre\u2011trained teacher transfers complex feature representations to a compact student.\n- Contrastive KD achieved 84.17% accuracy, demonstrating that a student can match or exceed its teacher through superior feature alignment.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "3",
+    "title": "Accelerating Computer Vision using Model Compression Techniques \u2013 Structured Summary",
+    "section": "Techniques",
+    "content": "- Structured channel pruning measuring filter importance via the median absolute first\u2011order loss sensitivity over the evaluation dataset.\n- Median aggregation reduces outlier impact and better reflects deployment\u2011time behaviour.\n- Compared to Taylor pruning, IAFB offers a more robust, calibration\u2011sensitive approximation to oracle importance while remaining computationally efficient.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "3",
+    "title": "Accelerating Computer Vision using Model Compression Techniques \u2013 Structured Summary",
+    "section": "Techniques",
+    "content": "- ResNet\u201150 trained with stem and final layers in FP32 for numerical stability; main body prepared for low\u2011precision execution.\n- After a short full\u2011precision warm\u2011up, Quantization\u2011Aware Training (QAT) simulates INT8 behavior, preserving high accuracy before conversion to a true INT8 model for efficient deployment.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "3",
+    "title": "Accelerating Computer Vision using Model Compression Techniques \u2013 Structured Summary",
+    "section": "Results and Discussion",
+    "content": "**Presentation Team**: Rahul Boddeda (422121), Revanth Reddy Avuthu (422113), Vamshi Korra (422175). Supervisor: Mr. Kousik K.  \n![Library_Management_system.png](assets/c89d187d1f6643dbbdb97d182dae7a9d.png)",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "3",
+    "title": "Accelerating Computer Vision using Model Compression Techniques \u2013 Structured Summary",
+    "section": "Results and Discussion",
+    "content": "| Technique | Baseline Model | Baseline Accuracy | Compressed Model | Compressed Accuracy | Gain/Drop |\n|-----------|----------------|-------------------|------------------|---------------------|----------|\n| Mixed Precision QAT \u2013 CIFAR10 | \u2013 | 92.45% | \u2013 | 90.33% | Drop (2.12%) |\n| Taylor Importance Pruning (DenseNet BC 100) | \u2013 | ~70% | \u2013 | 75.97% | Drop (1.62%) |\n| IAFB (ResNet\u201150) \u2013 CIFAR10 | \u2013 | ~70% | \u2013 | 94.59% | Gain (2.14%) |\n| IAFB (ResNet\u201150) \u2013 CIFAR100 | \u2013 | ~70% | \u2013 | 74.85% | Gain (2.75%) |\n| IAFB (ResNet\u201118) \u2013 CIFAR10 | \u2013 | ~70% | \u2013 | 94.29% | Gain (0.70%) |",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "3",
+    "title": "Accelerating Computer Vision using Model Compression Techniques \u2013 Structured Summary",
+    "section": "Results and Discussion",
+    "content": "- **CIFAR\u201110**: Baseline testing on 10 general object classes.\n- **CIFAR\u2011100**: Fine\u2011grained testing for complex feature extraction.\n- **ImageNette**: High\u2011resolution validation for spatial detail retention.  \n**Error Analysis**\n- *Feature Sensitivity*: Low\u2011bit QAT may confuse fine textures but retains high\u2011level shapes.\n- *Robustness*: Contrastive KD reduces logical errors, making student models more reliable than standard small models.\n- *Efficiency*: Pruning removes redundant filters without impacting overall classification logic.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "3",
+    "title": "Accelerating Computer Vision using Model Compression Techniques \u2013 Structured Summary",
+    "section": "Conclusion \u2013 The Future of Efficient AI",
+    "content": "Intelligent models can also be efficient. By leveraging IAFB and Quantization\u2011Aware Training, the deployment gap is bridged, producing compressed, edge\u2011ready models that match or surpass larger cloud\u2011based models, enabling real\u2011time computer vision on mobile and embedded systems.",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "3",
+    "title": "Accelerating Computer Vision using Model Compression Techniques \u2013 Structured Summary",
+    "section": "References",
+    "content": "1. P. Molchanov, A. Mallya, S. Tyree, I. Frosio, and J. Kautz, \u201cImportance Estimation for Neural Network Pruning,\u201d *Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. (CVPR)*, 2019, pp. 11264\u201311272.\n2. Kirtas, M., Passalis, N., Oikonomou, A., et al., \u201cMixed\u2011precision quantization\u2011aware training for photonic neural networks,\u201d *Applied Physics B*, vol. 130, 2024, doi:10.1007/s00340-024-08126-5.  \n![Screenshot_20260524-043831.Drive.png](assets/a625ab82207443169917799ddb82dd42.png)",
+    "owner_username": "abc"
+  },
+  {
+    "kb_id": "4",
+    "title": "How to Share a Secret \u2013 (k, n) Threshold Scheme",
+    "section": "1. Introduction",
+    "content": "The paper presents a method to divide dataD inton pieces so that anyk pieces can reconstructD, while anyk\u20111 pieces reveal no information aboutD. This (k,n) threshold scheme is intended for robust cryptographic key management.",
+    "owner_username": "Rahul"
+  },
+  {
+    "kb_id": "4",
+    "title": "How to Share a Secret \u2013 (k, n) Threshold Scheme",
+    "section": "2. Definition of a (k, n) Threshold Scheme",
+    "content": "- **Requirement1:** Knowledge of anyk or more piecesD_i makesD easily computable.\n- **Requirement2:** Knowledge of anyk\u20111 or fewer pieces leavesD completely undetermined (all possible values are equally likely).",
+    "owner_username": "Rahul"
+  },
+  {
+    "kb_id": "4",
+    "title": "How to Share a Secret \u2013 (k, n) Threshold Scheme",
+    "section": "3. Construction Using Polynomial Interpolation",
+    "content": "1. TreatD as an integer.\n2. Choose a primep>max(D,n).\n3. Randomly select coefficients a\u2081,\u2026,a_{k\u20111} uniformly from [0,p) and set a\u2080=D.\n4. Form the degree\u2011(k\u20111) polynomial\nq(x) = a\u2080 + a\u2081x + \u2026 + a_{k\u20111}x^{k\u20111}  (modp).\n5. Compute the n pieces as D_i = q(i) for i = 1,\u2026,n (modp).\n6. Any set of k pieces (with their indices) uniquely determines q(x) by interpolation, allowing recovery of D = q(0).\n7. With only k\u20111 pieces, an opponent can construct exactly one polynomial for each possible D' \u2208 [0,p), making all D' equally likely; thus no information about the true D is obtained.",
+    "owner_username": "Rahul"
+  },
+  {
+    "kb_id": "4",
+    "title": "How to Share a Secret \u2013 (k, n) Threshold Scheme",
+    "section": "4. Security Argument",
+    "content": "- The field of integers modulo a prime supports unique interpolation.\n- For each candidate D', there exists exactly one degree\u2011(k\u20111) polynomial matching the revealed k\u20111 points, yielding p equally likely possibilities.\n- Consequently, knowledge of fewer thank pieces gives no advantage in guessingD.",
+    "owner_username": "Rahul"
+  },
+  {
+    "kb_id": "4",
+    "title": "How to Share a Secret \u2013 (k, n) Threshold Scheme",
+    "section": "5. Efficiency and Implementation",
+    "content": "- Polynomial evaluation and interpolation can be performed in O(nlog\u00b2n) time (references [1], [3]), though quadratic algorithms are sufficient for practical key management.\n- For long D, split it into shorter blocks; each block is processed independently.\n- The modulus p must be at least n+1; a 16\u2011bit modulus suffices for up to 64,000 pieces.",
+    "owner_username": "Rahul"
+  },
+  {
+    "kb_id": "4",
+    "title": "How to Share a Secret \u2013 (k, n) Threshold Scheme",
+    "section": "6. Useful Properties",
+    "content": "1. **Size:** Each piece is no larger than the original data.\n2. **Dynamic Membership:** With fixedk, pieces can be added or deleted without affecting existing pieces.\n3. **Renewability:** Changing pieces only requires a new polynomial with the same free term (a\u2080=D), enhancing security against accumulated breaches.\n4. **Hierarchical Access:** By assigning multiple polynomial values to privileged users, the number of pieces needed to recoverD can depend on the users\u2019 importance (e.g., president alone, two vice\u2011presidents, or any three executives).",
+    "owner_username": "Rahul"
+  },
+  {
+    "kb_id": "4",
+    "title": "How to Share a Secret \u2013 (k, n) Threshold Scheme",
+    "section": "7. Applications",
+    "content": "- **Key Management:** Store encrypted keys using a (k,n) scheme with n=2k\u20111, allowing recovery after loss of up to k\u20111 pieces while preventing reconstruction when up to k\u20111 pieces are exposed.\n- **Digital Signature Authorization:** Executives receive magnetic cards containing D_i pieces; a signing device accepts any three pieces to generate a temporary copy of the signature key, which it then destroys.\n- **Group Decision Making:** By selecting appropriatekandn, a majority can act while a minority can veto, suitable for mutually suspicious groups.",
+    "owner_username": "Rahul"
+  },
+  {
+    "kb_id": "4",
+    "title": "How to Share a Secret \u2013 (k, n) Threshold Scheme",
+    "section": "8. Related Work",
+    "content": "- A less efficient threshold scheme was introduced by G.R.Blakley [2].\n- The mechanical lock/key solution for the \u201csix\u2011of\u2011eleven scientists\u201d problem requires 462 locks and 252 keys per scientist, which is impractical and scales exponentially.",
+    "owner_username": "Rahul"
+  },
+  {
+    "kb_id": "4",
+    "title": "How to Share a Secret \u2013 (k, n) Threshold Scheme",
+    "section": "9. References (as cited in the paper)",
+    "content": "1. Aho, Hopcroft, Ullman \u2013 *The Design and Analysis of Computer Algorithms* (1974).\n2. Blakley \u2013 \u201cSafeguarding cryptographic keys,\u201d Proc. AFIPS 1979 NCC (1979).\n3. Knuth \u2013 *The Art of Computer Programming, Vol.2* (1969).\n4. Liu \u2013 *Introduction to Combinatorial Mathematics* (1968).\n5. Rivest, Shamir, Adleman \u2013 \u201cA method for obtaining digital signatures and public\u2011key cryptosystems,\u201d Comm. ACM 21, 2 (1978).  \n![Screenshot_20260524-043831.Drive.png](assets/7f44cccd77d84984b5bbf6cde77ec3b8.png)",
+    "owner_username": "Rahul"
+  }
+]
