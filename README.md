@@ -1,8 +1,13 @@
-# Enterprise Knowledge Studio — Stakeholder Overview
+# Enterprise Knowledge Studio
 
-**Project Overview**
 
-Enterprise Knowledge Studio transforms raw documents into high-quality, reusable knowledge assets. The application guides business users through a simple flow: upload a document, receive a structured draft knowledge article, refine it through an editor, and publish it to a shared library. The system also provides an interactive Insight Chat so teams can ask questions and receive answers grounded in published knowledge.
+## Project Overview
+
+In many enterprises, valuable knowledge is often scattered across meeting discussions, Teams transcripts, documents, PDFs, presentations, and internal files. Employees frequently spend significant time searching for information that has already been discussed in a meeting or documented somewhere within the organization.
+
+Enterprise Knowledge Studio addresses this problem by transforming raw enterprise content into structured, reusable knowledge articles using AI.
+
+By combining AI-assisted knowledge generation with semantic retrieval and chatbot interaction, the platform helps organizations reduce repeated effort, improve knowledge accessibility, and accelerate information discovery across teams.
 
 **Key Features**
 
@@ -17,6 +22,46 @@ Enterprise Knowledge Studio transforms raw documents into high-quality, reusable
  - **Edit created KBs:** Users can open and edit any knowledge base they created, update content, and re-save or publish changes.
  - **Search published KBs:** Browse and search the global library of published knowledge bases to find relevant articles.
 
+
+## Why Enterprise Knowledge Studio is Different
+
+Most enterprise copilots and chatbot solutions primarily focus on answering questions from existing knowledge sources. They typically depend on pre-created documentation and act mainly as conversational retrieval systems.
+
+Enterprise Knowledge Studio goes beyond being just a chatbot or AI assistant.
+
+This platform is designed as an **end-to-end AI-powered knowledge creation and management system** that helps organizations not only consume knowledge, but also generate, structure, refine, publish, and continuously improve it.
+
+
+### How It Differs from Traditional Knowledge Base Chatbots
+
+Traditional knowledge base chatbots mainly focus on searching and answering questions from existing documentation. Their role is typically limited to retrieving information from already-created knowledge articles.
+
+Enterprise Knowledge Studio extends beyond retrieval by helping organizations generate high-quality knowledge articles using AI.
+
+Key differences:
+- Automatically converts raw enterprise documents into structured KB drafts.
+- Reduces manual effort required to create knowledge articles.
+- Allows users to review, edit, refine, and publish AI-generated KBs.
+- Standardizes KB creation workflows using AI-assisted drafting.
+- Combines AI-powered knowledge generation with chatbot-based retrieval in a single platform.
+
+### How It Differs from Copilot AI Agents
+
+Copilot AI agents are primarily designed for productivity assistance, workflow automation, and conversational task execution across enterprise applications.
+
+Enterprise Knowledge Studio is specifically focused on accelerating enterprise knowledge creation and enabling AI-powered interaction on top of that generated knowledge.
+
+Key differences:
+- Purpose-built for AI-assisted KB article generation from enterprise documents.
+- Creates structured and reusable knowledge articles from raw content.
+- Enables human validation and refinement before publishing.
+- Provides an Insight Chat grounded on approved/generated KB articles.
+- Focuses on improving knowledge authoring efficiency rather than general task automation.
+- Combines KB generation, editing, publishing, and AI-powered querying within a unified workflow.
+
+
+
+
 **User Workflow (what users do)**
 
 1. Log in or create an account.
@@ -30,7 +75,7 @@ Enterprise Knowledge Studio transforms raw documents into high-quality, reusable
 7. Search & discover:
    - Search the global library of published KBs and open items for reading or editing (if you are the owner).
 8. Use the Insight Chat to ask questions that are answered from published content.
-8. View or remove past chat sessions in the sidebar.
+9. View or remove past chat sessions in the sidebar.
 
 **Current Capabilities (what works today)**
 
