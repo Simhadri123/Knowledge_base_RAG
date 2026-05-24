@@ -1,53 +1,68 @@
-# Enterprise Knowledge Extraction Platform
+# Enterprise Knowledge Studio — Stakeholder Overview
 
-## Executive Summary
-This project turns enterprise documents into a clean, reusable knowledge base. Users upload files, the system extracts key content, and a draft knowledge article is generated for review and approval. The result is a curated, searchable knowledge asset that supports internal teams and customer-facing use cases.
+**Project Overview**
 
-## What It Does
-- Accepts common enterprise file types (documents, presentations, PDFs, transcripts, images).
-- Extracts text (including OCR for images).
-- Organizes content into structured knowledge articles.
-- Provides an editing experience for business users to refine and approve.
-- Saves approved knowledge to a centralized library.
+Enterprise Knowledge Studio transforms raw documents into high-quality, reusable knowledge assets. The application guides business users through a simple flow: upload a document, receive a structured draft knowledge article, refine it through an editor, and publish it to a shared library. The system also provides an interactive Insight Chat so teams can ask questions and receive answers grounded in published knowledge.
 
-## Why It Matters
-- Reduces time spent turning raw documents into usable knowledge.
-- Standardizes documentation into consistent, high-quality formats.
-- Keeps institutional knowledge current and easy to reuse.
-- Supports compliance and accuracy by keeping edits human-reviewed.
+**Key Features**
 
-## Key Capabilities
-1) Multi-format Upload
-   - Word, PowerPoint, PDF, video transcripts, and images.
+- **User accounts:** Signup, login, and a personalized workspace for each user.
+- **Document upload & extraction:** Upload common file types (PDF, DOCX, PPTX, transcripts, images); the system extracts text and stores a processed version for review.
+- **Automated knowledge drafting:** Converts extracted text into a draft knowledge article (with headings and sections) so subject-matter experts can review instead of authoring from scratch.
+- **Rich editor & assets:** Edit drafts in Markdown, insert images and links, preview content, and save changes.
+- **Publish/unpublish workflow:** Save drafts, publish approved articles to a shared library, and unpublish when needed.
+- **Insight Chat (RAG-backed):** Ask the knowledge base questions and receive answers supported by retrieved document sections.
+- **Chat history & sessions:** Conversations are saved per user and can be viewed or deleted.
+- **Vector sync & semantic search:** Published articles are converted into searchable vectors so the Insight Chat can find relevant content quickly.
+ - **Edit created KBs:** Users can open and edit any knowledge base they created, update content, and re-save or publish changes.
+ - **Search published KBs:** Browse and search the global library of published knowledge bases to find relevant articles.
 
-2) Automated Knowledge Drafting
-   - Creates a structured draft with headings and key points.
+**User Workflow (what users do)**
 
-3) Human-in-the-Loop Review
-   - Users can edit content and approve final versions.
+1. Log in or create an account.
+2. Upload a document (or select a pre-extracted file).
+3. Generate a knowledge draft automatically from the uploaded content.
+4. Review, edit, insert images/links, and preview the article.
+5. Save the draft; optionally publish it to the global library.
+6. Edit or manage your KBs:
+   - Edit content of knowledge bases you created and save updates
+   - Publish / unpublish or delete knowledge articles
+7. Search & discover:
+   - Search the global library of published KBs and open items for reading or editing (if you are the owner).
+8. Use the Insight Chat to ask questions that are answered from published content.
+8. View or remove past chat sessions in the sidebar.
 
-4) Asset Support
-   - Images and links can be embedded into the knowledge article.
+**Current Capabilities (what works today)**
 
-5) Knowledge Library
-   - Approved content is saved and accessible for reuse.
+- **End-to-end demo flow:** Upload → extract → draft → edit → save → publish (fully functional via the Streamlit demo).
+- **Multi-format extraction:** Handles text extraction from common business formats (PDF, DOCX, PPTX, plain text, and supported images).
+- **Draft generation & approval:** The system produces an editable draft and supports manual approval/publish.
+- **Publishing triggers semantic indexing:** When an article is published it is added to an internal vector index so the chat can retrieve relevant sections.
+- **Interactive web UI for business users:** A Streamlit-based interface provides the full user journey with clear controls for upload, editing, publishing, and chat.
+- **Insight Chat:** Returns answers grounded in retrieved knowledge sections.
+- **User-level chat history:** Conversations are persisted per user and can be deleted.
+- **Asset handling:** Upload and insert images into articles; stored assets are served from the application.
+ - **Edit saved KBs:** Users can open and edit knowledge bases they created; edits can be saved and re-published.
+ - **Search published KBs:** The UI supports browsing and searching the global published KB list to discover relevant content.
 
-## User Experience (Non-Technical)
-1) Upload a file.
-2) Receive a knowledge draft.
-3) Edit and add links or images as needed.
-4) Approve to publish into the knowledge library.
+**Business Value / Benefits**
 
-## Outputs
-- Clean knowledge articles stored as structured files.
-- Supporting assets (images) stored alongside content.
+- **Faster content production:** Converts documents into review-ready drafts, reducing authoring time.
+- **Consistent knowledge assets:** Standardizes tone and structure across articles for higher reuse and trust.
+- **Improved customer & employee support:** Insight Chat surfaces accurate answers based on approved content, reducing mean time to answer.
+- **Audit-friendly:** Human review remains central — drafts are reviewed before publishing, supporting compliance and quality control.
+- **Reusable library:** Published knowledge becomes a searchable corporate asset that can be surfaced across teams.
 
-## Project Status
-- Phase 1: File upload and text extraction complete.
-- Phase 2: Chunking and content preparation complete.
-- Phase 3: Knowledge drafting and approval workflow complete.
+**Future Enhancement Possibilities**
 
-## Next Steps (Optional)
-- Integrate with enterprise search and portals.
-- Add role-based access control and audit trails.
-- Add analytics for usage, gaps, and content health.
+- **Multi-file knowledge generation:** Currently, the platform processes only one file at a time. Future versions will support uploading and processing multiple documents together to generate a unified knowledge article.
+- **Image and visual content extraction:** At present, the system extracts only textual content from PDFs and Word documents. Future enhancements will enable extraction and understanding of images, screenshots, diagrams, tables, and embedded visual content inside documents.
+- **Enhanced frontend experience:** Improve the UI/UX with a more intuitive dashboard, better navigation, cleaner article viewing, richer previews, drag-and-drop uploads, and a more user-friendly workflow.
+- **Role-based access and approvals:** Introduce admin/reviewer workflows with approval stages for publishing enterprise knowledge articles.
+- **Enterprise integrations:** Integrate with platforms such as SharePoint, ServiceNow.
+
+**Notes & Requirements (short)**
+
+- The product is a working prototype intended for demos and hackathons. It includes a business-facing web UI and a REST API for integrations.
+- The Insight Chat uses an external LLM integration and requires a provider API key to produce generative answers; this is configurable in the deployment environment.
+
