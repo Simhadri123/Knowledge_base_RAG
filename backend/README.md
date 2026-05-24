@@ -7,6 +7,7 @@ Phase 1-3 backend for file upload, text extraction, chunking, and knowledge base
 - OCR for images using Tesseract
 - Fixed-size chunking with sentence-aware boundaries
 - Knowledge base generation with LangChain refine chain
+ - Knowledge base generation with LangChain refine chain (LLM-powered; uses OpenRouter by default)
 - Outputs stored as JSON under extracted/, chunks/, and knowledge_base/
 
 ## Project Structure
@@ -262,4 +263,4 @@ Assets are served by the API at:
 
 ## Notes
 - OCR relies on Tesseract binary being installed and accessible.
-- OpenRouter API key is required for Phase 3.
+ - OpenRouter API key is required for Phase 3 (used for automated knowledge generation and the RAG-backed chatbot). Set `OPENROUTER_API_KEY` in the environment or a `.env` file.
